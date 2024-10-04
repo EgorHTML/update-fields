@@ -18,7 +18,7 @@ export default class TreeList {
       }
     })
 
-    nodes = nodes.filter((node) => node.option.pid === 0)
+    nodes = nodes.filter((node) => !node.option.pid)
     this.list = nodes
   }
 
