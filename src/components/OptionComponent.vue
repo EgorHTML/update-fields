@@ -1,5 +1,15 @@
-<script setup></script>
+<script setup>
+defineProps({
+  option: {
+    default() {
+      return {}
+    },
+    required: true,
+    type: Object,
+  },
+})
+</script>
 
 <template>
-  <div>option</div>
+  <div class="option">{{ option.id }}</div>
 </template>
