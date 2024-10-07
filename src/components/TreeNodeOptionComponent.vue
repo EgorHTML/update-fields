@@ -32,9 +32,10 @@ function updateFieldOptions(event) {
     x: event.x,
     y: event.y,
   }
-  editForm.value.node = props.node
+  const { name } = props.node.option
+  editForm.value.node = { ...props.node }
   if (action === 'edit' || action === 'delete') {
-    editForm.value.name = props.node.option.name
+    editForm.value.name = { ...name }
   } else if (action === 'add') {
     editForm.value.name = { ru: '', en: '', ua: '' }
   }

@@ -1,6 +1,6 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
-import { computed, ref, provide } from 'vue'
+import { ref, provide, watchEffect } from 'vue'
 import TreeList from '../interfaces/TreeList.js'
 import TreeOptionsBlock from './TreeOptionsBlock.vue'
 import EditOptionForm from '../components/EditOptionForm.vue'
@@ -15,17 +15,19 @@ const props = defineProps({
     required: false,
     type: Array,
   },
+  fieldId: {
+    default: 0,
+    required: true,
+    type: Number,
+  },
 })
 
-const treeList = computed(() => new TreeList(props.options))
+const treeList = ref()
 
-const container = ref()
-console.log(container, 'cont')
-
-const actions = {
-  edit: updateOptions,
-  delete: deleteOption,
-}
+watchEffect(() => {
+  treeList.value = new TreeList(props.options)
+  console.log(treeList.value, 'treeList wathch')
+})
 
 const editOptionFormSettings = ref({
   type: 'edit',
@@ -44,13 +46,40 @@ const editOptionFormSettings = ref({
 
 provide('editFormSettings', editOptionFormSettings)
 
-function updateFieldOptions() {
+async function updateFieldOptions() {
   console.log(editOptionFormSettings.value, 'editOptionFormSettings')
+  const type = editOptionFormSettings.value.type
+  let data
+  try {
+    if (type === 'edit') {
+      const option = {
+        name: editOptionFormSettings.value.name,
+        id: editOptionFormSettings.value.node.option.id,
+      }
+      data = await updateOptions(props.fieldId, [option])
+    } else if (type === 'add') {
+      const option = {
+        name: editOptionFormSettings.value.name,
+        pid: editOptionFormSettings.value.node.option.id,
+      }
+
+      data = await updateOptions(props.fieldId, [option])
+    } else if (type === 'delete') {
+      data = await deleteOption(
+        props.fieldId,
+        editOptionFormSettings.value.node.option.id
+      )
+    }
+  } catch (error) {
+    console.warn(error)
+  }
+
+  console.log(data, 'data')
 }
 </script>
 
 <template>
-  <div ref="container">
+  <div>
     <PopoverComponent
       :settings="{
         show: editOptionFormSettings.show,

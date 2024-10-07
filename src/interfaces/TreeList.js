@@ -9,7 +9,11 @@ export default class TreeList {
   }
 
   parseOptionsInTreeList() {
-    let nodes = this.options.map((option) => new TreeNode(option, []))
+    let nodes = this.options.map((option) => {
+      const opt = { ...option }
+      opt.name = { ...opt.name }
+      return new TreeNode(opt, [])
+    })
 
     nodes.forEach((node) => {
       const parent = nodes.find((_node) => _node.option.id == node.option.pid)

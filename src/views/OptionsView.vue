@@ -29,6 +29,6 @@ watchEffect(() => {
 <template>
   <div>
     <ParamsFieldBlock v-model="fieldId" />
-    <FieldOptionsBlock :options="options" />
+    <FieldOptionsBlock :field-id="fieldId" :options="options" />
   </div>
 </template>
