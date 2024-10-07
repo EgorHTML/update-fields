@@ -1,4 +1,3 @@
-import HDE from '../plugin'
 import makeRequest from '../utils/request.js'
 
 export async function getOptions(fieldId, page = 1) {
@@ -13,14 +12,28 @@ export async function getOptions(fieldId, page = 1) {
 }
 
 export async function deleteOption(fieldId, optionId) {
-  const data = (
-    await HDE.request({
-      auth: 'HDE',
+  const data = await makeRequest(
+    {
       url: `${window.location.origin}/api/v2/custom_fields/${fieldId}/options/${optionId}`,
       method: 'DELETE',
-      contentType: 'application/json',
-    })
-  ).data
+    },
+    true
+  )
+
+  return data
+}
+
+export async function updateOptions(fieldId, options) {
+  const data = await makeRequest(
+    {
+      url: `${window.location.origin}/api/v2/custom_fields/${fieldId}/options/`,
+      method: 'POST',
+      body: {
+        options,
+      },
+    },
+    true
+  )
 
   return data
 }

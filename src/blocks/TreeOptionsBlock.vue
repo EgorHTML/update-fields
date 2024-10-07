@@ -1,8 +1,7 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
 import TreeNode from '../interfaces/TreeNode.js'
-import OptionsBlock from './OptionsBlock.vue'
-import OptionComponent from '../components/TreeNodeOptionComponent.vue'
+import TreeNodeOptionComponent from '../components/TreeNodeOptionComponent.vue'
 
 const porps = defineProps({
   tree: {
@@ -16,7 +15,13 @@ const porps = defineProps({
 </script>
 
 <template>
-  <div class="tree_options" style="border: 1px solid #000">
-    <OptionComponent :node="tree" />
+  <div class="tree_options">
+    <TreeNodeOptionComponent :node="tree" />
   </div>
 </template>
+
+<style scoped>
+.tree_options {
+  border-bottom: 1px solid rgb(197, 198, 201, 0.8);
+}
+</style>

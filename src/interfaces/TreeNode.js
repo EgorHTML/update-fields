@@ -1,10 +1,10 @@
 export default class TreeNode {
-  constructor(option, childrens) {
+  constructor(option, children) {
     this.option = option
-    this.childrens = childrens
+    this.children = children
   }
 
   appendChild(child) {
-    this.childrens.push(child)
+    this.children.push(child)
   }
 }

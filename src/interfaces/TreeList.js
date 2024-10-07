@@ -14,7 +14,7 @@ export default class TreeList {
     nodes.forEach((node) => {
       const parent = nodes.find((_node) => _node.option.id == node.option.pid)
       if (parent) {
-        parent.childrens.push(node)
+        parent.children.push(node)
       }
     })
 
