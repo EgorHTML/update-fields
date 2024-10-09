@@ -21,14 +21,14 @@ const props = defineProps({
 const style = computed(() => {
   const bodyWidth = document.body.clientWidth
   const defaulPopopertWidth = 200
-  const diff =
+  const diffX =
     bodyWidth -
     (props.settings.style.left +
       (props.settings.style.width || defaulPopopertWidth))
 
   return {
     top: props.settings.style.top + 'px',
-    left: props.settings.style.left + (diff < 0 ? diff : 0) + 'px',
+    left: props.settings.style.left + (diffX < 0 ? diffX : 0) + 'px',
     width: (props.settings.style.width || defaulPopopertWidth) + 'px',
   }
 })

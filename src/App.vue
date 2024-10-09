@@ -1,4 +1,3 @@
-<!-- eslint-disable no-unused-vars -->
 <script setup>
 import OptionsView from './views/OptionsView.vue'
 </script>

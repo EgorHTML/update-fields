@@ -11,9 +11,13 @@ const setOptionsThrottle = throttle(setOptions, 1000)
 
 async function setOptions() {
   try {
-    const data = await getOptions(fieldId.value)
-
-    options.value = data.data
+    let data = await getOptions(fieldId.value)
+    options.value.push(...data.data)
+    const pages = data.pagination.total_pages
+    for (let page = 2; page <= pages; page++) {
+      data = await getOptions(fieldId.value, page)
+      options.value.push(...data.data)
+    }
   } catch (error) {
     console.warn(error)
   }
@@ -21,6 +25,7 @@ async function setOptions() {
 
 watchEffect(() => {
   if (fieldId.value) {
+    options.value = []
     setOptionsThrottle()
   }
 })

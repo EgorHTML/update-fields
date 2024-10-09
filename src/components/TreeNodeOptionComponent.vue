@@ -1,6 +1,7 @@
 <script setup>
 import { computed, inject, ref } from 'vue'
 import TreeNode from '../interfaces/TreeNode.js'
+import { editHandler } from '../utils/editForm.js'
 
 const props = defineProps({
   node: {
@@ -12,34 +13,17 @@ const props = defineProps({
   },
 })
 
+const children = computed(() => props.node.children)
+
 const editForm = inject('editFormSettings')
 
-const hasChildren = props.node.children && props.node.children.length
+const hasChildren = children.value && children.value.length
 const open = ref(true)
 
 const label = computed(() => {
   const option = props.node.option
   return option.name.ru || option.name.en || option.name.ua || 'Неизвестно'
 })
-
-function updateFieldOptions(event) {
-  const action = event.target.dataset.action
-  if (!action) return
-
-  editForm.value.type = action
-  editForm.value.show = true
-  editForm.value.coords = {
-    x: event.x,
-    y: event.y,
-  }
-  const { name } = props.node.option
-  editForm.value.node = { ...props.node }
-  if (action === 'edit' || action === 'delete') {
-    editForm.value.name = { ...name }
-  } else if (action === 'add') {
-    editForm.value.name = { ru: '', en: '', ua: '' }
-  }
-}
 </script>
 
 <template>
@@ -58,9 +42,15 @@ function updateFieldOptions(event) {
       <div
         ref="action_buttons"
         class="action_buttons"
-        @click="updateFieldOptions"
+        @click="editHandler($event, editForm, node)"
       >
-        <div class="action_button" data-action="add">Добавить</div>
+        <div
+          v-if="node.option.pid !== undefined"
+          class="action_button"
+          data-action="add"
+        >
+          Добавить
+        </div>
         <div class="action_button" data-action="edit">Редактировать</div>
         <div class="action_button" data-action="delete">Удалить</div>
       </div>
@@ -74,7 +64,7 @@ function updateFieldOptions(event) {
       >
         <div style="padding-left: 14px">
           <TreeNodeOptionComponent
-            v-for="child in node.children"
+            v-for="child in children"
             :key="child.option.id"
             :node="child"
           />

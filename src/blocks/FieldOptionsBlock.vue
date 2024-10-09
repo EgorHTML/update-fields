@@ -1,11 +1,12 @@
 <!-- eslint-disable no-unused-vars -->
 <script setup>
-import { ref, provide, watchEffect } from 'vue'
+import { ref, provide, watchEffect, nextTick } from 'vue'
 import TreeList from '../interfaces/TreeList.js'
-import TreeOptionsBlock from './TreeOptionsBlock.vue'
 import EditOptionForm from '../components/EditOptionForm.vue'
 import { updateOptions, deleteOption } from '../api/fieldOptions.js'
 import PopoverComponent from '../components/PopoverComponent.vue'
+import TreeNodeOptionComponent from '../components/TreeNodeOptionComponent.vue'
+import { editHandler } from '../utils/editForm.js'
 
 const props = defineProps({
   options: {
@@ -22,11 +23,19 @@ const props = defineProps({
   },
 })
 
+const renderComponent = ref(true)
+
+const forceRender = async () => {
+  renderComponent.value = false
+  await nextTick()
+  renderComponent.value = true
+}
+
 const treeList = ref()
 
-watchEffect(() => {
+watchEffect(async () => {
   treeList.value = new TreeList(props.options)
-  console.log(treeList.value, 'treeList wathch')
+  await forceRender()
 })
 
 const editOptionFormSettings = ref({
@@ -47,7 +56,7 @@ const editOptionFormSettings = ref({
 provide('editFormSettings', editOptionFormSettings)
 
 async function updateFieldOptions() {
-  console.log(editOptionFormSettings.value, 'editOptionFormSettings')
+  // stop()
   const type = editOptionFormSettings.value.type
   let data
   try {
@@ -65,6 +74,13 @@ async function updateFieldOptions() {
 
       data = await updateOptions(props.fieldId, [option])
     } else if (type === 'delete') {
+      data = {
+        data: [
+          {
+            id: editOptionFormSettings.value.node.option.id,
+          },
+        ],
+      }
       data = await deleteOption(
         props.fieldId,
         editOptionFormSettings.value.node.option.id
@@ -74,12 +90,13 @@ async function updateFieldOptions() {
     console.warn(error)
   }
 
-  console.log(data, 'data')
+  treeList.value = treeList.value.update(data.data)
+  await forceRender()
 }
 </script>
 
 <template>
-  <div>
+  <div v-if="renderComponent">
     <PopoverComponent
       :settings="{
         show: editOptionFormSettings.show,
@@ -94,11 +111,28 @@ async function updateFieldOptions() {
         @edit="updateFieldOptions"
       />
     </PopoverComponent>
-    <TreeOptionsBlock
-      v-for="node in treeList.list"
-      :key="node.option?.id"
-      style="width: 95%; margin: 0 auto"
-      :tree="node"
-    />
+    <div class="container" style="width: 95%; margin: 0 auto">
+      <div
+        v-if="treeList.list && treeList.list.length"
+        data-action="add"
+        class="action_button"
+        @click="editHandler($event, editOptionFormSettings, {})"
+      >
+        Добавить первый уровень
+      </div>
+      <div
+        v-for="node in treeList.list"
+        :key="node.option?.id"
+        class="tree_options"
+      >
+        <TreeNodeOptionComponent :node="node" />
+      </div>
+    </div>
   </div>
 </template>
+
+<style scoped>
+.tree_options {
+  border-bottom: 1px solid #cccbcb;
+}
+</style>

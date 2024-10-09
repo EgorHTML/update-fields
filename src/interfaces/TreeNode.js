@@ -5,6 +5,6 @@ export default class TreeNode {
   }
 
   appendChild(child) {
-    this.children.push(child)
+    this.children = [...this.children, child]
   }
 }
